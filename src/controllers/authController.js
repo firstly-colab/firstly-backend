@@ -5,7 +5,7 @@ const jwtGenerator = require('../utils/tokenGenerator')
 class AuthController {
     
     static async registerUser(req, res) {
-        const {email, password} = req.body
+        const {name, email, password} = req.body
         try {
             const user = await pool.query('SELECT * FROM public.user WHERE public.user.email = $1', [email]).then(res => res.rows)
             
@@ -15,9 +15,11 @@ class AuthController {
 
             const hashedPassword = await bcrypt.hash(password, 10)
 
-            const newUser = await pool.query('INSERT INTO public.user (email, password) VALUES ($1, $2) RETURNING *', [
-                email, 
-                hashedPassword]).then(res => res.rows)
+            const newUser = await pool.query('INSERT INTO public.user (email, name, password) VALUES ($1, $2, $3) RETURNING *', [
+                email,
+                name, 
+                hashedPassword]
+            ).then(res => res.rows)
 
             const token = jwtGenerator(newUser[0].id)
             return res.json({token})
@@ -30,7 +32,7 @@ class AuthController {
 
     static async loginUser (req, res) {
         const {email, password} = req.body
-        console.log(email, password)
+
         try {
             const user = await pool.query('SELECT * FROM public.user WHERE public.user.email = $1', [email]).then(res => res.rows)
 
@@ -46,7 +48,7 @@ class AuthController {
 
             const token = jwtGenerator(user[0].id)
 
-            return res.status(200).json({token})
+            return res.status(200).json({user: user[0], token: token})
 
         } catch (error) {
             console.log(error)
