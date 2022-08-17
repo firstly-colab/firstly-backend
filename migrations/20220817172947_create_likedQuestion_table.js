@@ -2,13 +2,11 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
- exports.up = function(knex) {
-    return knex.schema.createTable('feedback', function (table) {
+exports.up = function(knex) {
+    return knex.schema.createTable('likedQuestion', (table) => {
         table.increments('id').primary();
         table.integer('user_id').references('id').inTable('user');
-        table.integer('response_id').references('id').inTable('response')
-        table.boolean('desired');
-
+        table.integer('response_id').references('id').inTable('response');
     })
 };
 
@@ -17,5 +15,5 @@
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.schema.dropTable('feedback')
+    return knex.schema.dropTable('likedQuestion')
 };
