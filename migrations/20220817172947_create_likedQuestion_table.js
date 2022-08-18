@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-    return knex.schema.createTable('likedQuestion', (table) => {
+    return knex.schema.createTable('favorites', function(table) {
         table.increments('id').primary();
         table.integer('user_id').references('id').inTable('user');
         table.integer('response_id').references('id').inTable('response');
@@ -15,5 +15,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.schema.dropTable('likedQuestion')
+    return knex.schema.dropTable('favorites')
 };
