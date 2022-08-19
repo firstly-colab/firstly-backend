@@ -4,8 +4,8 @@ const pool = require('../../dbConfig')
 class LikedQuesController {
 
     static async getLiked(req, res) {
-        const { user_id } = req.body
-
+        const { user_id } = req.params
+        
         try {
             const response = await pool.query('SELECT * FROM public.favorites JOIN public.user ON public.favorites.user_id = public.user.id JOIN public.response ON public.favorites.response_id = public.response.id WHERE public.user.id = $1', [user_id]).then(res => res.rows);
             return res.status(200).json(response)
