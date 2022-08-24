@@ -18,8 +18,8 @@ class LikedQuesController {
     static async sendLiked(req, res) {
         const { user_id, response_id } = req.body
         try {
-            const resp = await pool.query('SELECT * FROM public.favorites WHERE public.favorites.user_id = $1 AND public.favorites.response_id = $2', [user_id, response_id]).then(res => res.rows[0])
-            if (!resp.id) {
+            const resp = await pool.query('SELECT * FROM public.favorites WHERE public.favorites.user_id = $1 AND public.favorites.response_id = $2', [user_id, response_id]).then(res => res.rows)
+            if (resp.length === 0) {
                 await pool.query('INSERT INTO public.favorites (user_id, response_id) VALUES ($1, $2) RETURNING *', [user_id, response_id])
                 return res.status(200).json("Saved to favorites")
             } else {
