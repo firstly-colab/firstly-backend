@@ -17,13 +17,28 @@ class LikedQuesController {
 
     static async sendLiked(req, res) {
         const { user_id, response_id } = req.body
-        console.log(user_id, response_id)
         try {
-            const resp = await pool.query('INSERT INTO public.favorites (user_id, response_id) VALUES ($1, $2) RETURNING *', [user_id, response_id]).then(res => res.rows[0])
-            return res.status(200).json("Added to favorites")
+            const resp = await pool.query('SELECT * FROM public.favorites WHERE public.favorites.user_id = $1 AND public.favorites.response_id = $2', [user_id, response_id]).then(res => res.rows[0])
+            if (!resp.id) {
+                await pool.query('INSERT INTO public.favorites (user_id, response_id) VALUES ($1, $2) RETURNING *', [user_id, response_id])
+                return res.status(200).json("Saved to favorites")
+            } else {
+                return res.status(500).json("Already in favorites")
+            }
         } catch (error) {
             console.log(error)
             return res.status(500).json("Server Error")
+        }
+    }
+
+    static async sendDisliked(req, res) {
+        const { user_id, question_id } = req
+        try {
+            const resp = await pool.query('DELETE FROM public.favorites WHERE public.favorites.user_id = $1 AND public.favorites.response_id = $2',[user_id, question_id]).then(res => res.rows[0])
+            return res.status(200).json("Conversation starter removed from favorites")
+        } catch (error) {
+            console.log(error)
+            res.status(500).json("Server Error")
         }
     }
 }
