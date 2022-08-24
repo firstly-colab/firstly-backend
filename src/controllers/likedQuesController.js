@@ -32,7 +32,7 @@ class LikedQuesController {
     }
 
     static async sendDisliked(req, res) {
-        const { user_id, question_id } = req
+        const { user_id, question_id } = req.params
         try {
             const resp = await pool.query('DELETE FROM public.favorites WHERE public.favorites.user_id = $1 AND public.favorites.response_id = $2',[user_id, question_id]).then(res => res.rows[0])
             return res.status(200).json("Conversation starter removed from favorites")
